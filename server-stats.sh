@@ -21,6 +21,23 @@ printf "%-8s %-6s %-6s %-6s %s\n" "PID" "USER" "CPU%" "MEM%" "COMMAND"
 ps aux --sort=-%mem | awk 'NR>=2 && NR<=6{printf "%-8s %-6s %-6s %-6s %s\n", $2, $1, $3"%", $4"%", $11}'
 
 echo
+echo "=== OS VERSION ==="
+uname -r
+echo
+echo "=== UPTIME ==="
+uptime
+echo
+echo "=== USERS LOGGED IN ==="
+w
+echo
+echo "=== FAILED LOGIN ATTEMPTS ==="
+failed=$(grep "Failed password" /var/log/auth.log 2>/dev/null)
+if [ -n "$failed" ]; then
+    echo "$failed"
+else
+    echo "No failed login attempts found"
+fi
+echo
 echo "=== SUMMARY ==="
 # Memory summary
 MEM_TOTAL=$(free -m | grep Mem | awk '{print $2}')
@@ -31,3 +48,4 @@ echo "Memory: ${MEM_USED}MB/${MEM_TOTAL}MB (${MEM_PERCENT}%)"
 # Disk summary for root filesystem
 DISK_INFO=$(df -h / | tail -1)
 echo "Disk (/):" $(echo $DISK_INFO | awk '{print $3"/"$2" ("$5")"}')
+
